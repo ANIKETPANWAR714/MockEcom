@@ -1,21 +1,21 @@
-// app/login.tsx
 "use client";
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
+import { useRouter } from 'next/navigation';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // State to hold error messages
-  const router = useRouter(); // Initialize useRouter
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Logging in:", email, password);
-    setErrorMessage(''); // Clear any previous error message
+    setLoading(true);
+    setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('https://mockecom.onrender.com/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,64 +24,62 @@ const Login: React.FC = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json(); // Get error message from response
-        throw new Error(errorData.message || 'Login failed'); // Use error message from server if available
+        const errorData = await response.json();
+        console.error("Error response from server:", errorData);
+        setErrorMessage(errorData.message || 'Login failed');
+      } else {
+        const data = await response.json();
+        console.log("Login successful:", data);
+        
+        // Save user details to local storage
+        localStorage.setItem('user', JSON.stringify(data)); // Store the user details
+        localStorage.setItem('isAuthenticated', 'true'); // Optionally store authentication state
+        router.push('/'); // Navigate to the homepage
       }
-
-      const data = await response.json();
-      console.log("Login successful:", data);
-      localStorage.setItem('user', JSON.stringify(data.user)); // Save user details
-      router.push('/'); // Navigate to homepage after successful login
-    } catch (error: any) {
-      console.error("Error logging in:", error);
-      setErrorMessage(error.message); // Set error message to state for displaying
+    } catch (error) {
+      console.error("Error during login:", error);
+      setErrorMessage("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500">
-      <div className="bg-white rounded-2xl shadow-lg p-10 max-w-md w-full transition-transform transform hover:scale-105">
-        <h2 className="text-4xl font-extrabold text-center text-gray-800 mb-6">Login</h2>
-        
-        {errorMessage && ( // Conditionally render the error message
-          <div className="mb-4 text-red-600 text-center">
-            {errorMessage}
-          </div>
-        )}
-
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-400 to-blue-500">
+      <div className="p-8 bg-white rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Login</h2>
+        {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>
+            <label className="block mb-2 text-gray-700" htmlFor="email">Email:</label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="border-2 border-gray-300 rounded-lg w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
+              className="border rounded-lg w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-400"
               placeholder="Enter your email"
             />
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2" htmlFor="password">Password</label>
+          <div className="mb-4">
+            <label className="block mb-2 text-gray-700" htmlFor="password">Password:</label>
             <input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="border-2 border-gray-300 rounded-lg w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
+              className="border rounded-lg w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-400"
               placeholder="Enter your password"
             />
           </div>
-          <button 
-            type="submit" 
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-lg py-2 font-bold hover:from-purple-700 hover:to-blue-600 transition duration-200 shadow-md">
-            Login
+          <button type="submit" disabled={loading} className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition duration-300 w-full">
+            {loading ? 'Logging In...' : 'Login'}
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600">
-          Don't have an account? <a href="/signup" className="text-blue-600 font-semibold hover:underline">Sign up</a>
+          Don't have an account? <a href="/signup" className="text-green-500 hover:underline">Signup here</a>
         </p>
       </div>
     </div>
@@ -89,5 +87,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-
 

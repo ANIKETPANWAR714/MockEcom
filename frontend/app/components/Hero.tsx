@@ -7,7 +7,7 @@ const Hero = () => {
         </h1>
         <p className="mt-2 text-lg">Shop the latest products and offers.</p>
         <img
-          src="/path/to/hero-image.jpg" // Replace with your hero image path
+          src="/images/hero.jpeg" // Replace with your hero image path
           alt="Promotional Banner"
           className="absolute inset-0 w-full h-full object-cover opacity-30"
         />

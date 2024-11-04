@@ -6,12 +6,12 @@ import Hero from './components/Hero';
 import FeaturedCategories from './components/FeaturedCategories';
 import RecommendedProducts from './components/RecommendedProducts';
 import BestSellers from './components/BestSellers';
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
+import { useRouter } from 'next/navigation';
 
 const HomePage = () => {
-  const [products, setProducts] = useState([]); // State for product data
-  const [user, setUser] = useState<{ email: string } | null>(null); // State to hold user details
-  const router = useRouter(); // Initialize useRouter
+  const [products, setProducts] = useState([]);
+  const [user, setUser] = useState<{ email: string } | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -20,25 +20,26 @@ const HomePage = () => {
       setProducts(data);
     };
 
-    const userDetails = localStorage.getItem('user'); // Get user details from local storage
+    const userDetails = localStorage.getItem('user');
+    console.log('User details:accessed'); // Check if user details are retrieved correctly
     if (!userDetails) {
-      router.push('/login'); // Redirect to login if no user found
+      router.push('/login');
     } else {
-      setUser(JSON.parse(userDetails)); // Set user details if found
+      setUser(JSON.parse(userDetails));
     }
 
     fetchProducts();
   }, [router]);
 
   const handleLogout = () => {
-    setUser(null); // Clear user state
-    localStorage.removeItem('user'); // Remove user details from local storage
-    router.push('/login'); // Redirect to login page
+    setUser(null);
+    localStorage.removeItem('user');
+    router.push('/login');
   };
 
   return (
     <div>
-      <Navbar user={user} onLogout={handleLogout} /> {/* Pass user details and logout function to Navbar */}
+      <Navbar user={user} onLogout={handleLogout} />
       <Hero />
       <FeaturedCategories />
       <RecommendedProducts products={products} />
@@ -51,4 +52,5 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
 

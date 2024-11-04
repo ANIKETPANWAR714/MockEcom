@@ -1,17 +1,21 @@
 "use client";
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
+import { useRouter } from 'next/navigation';
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter(); // Initialize router for navigation
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter();
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch('https://mockecom.onrender.com/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -20,20 +24,24 @@ const Signup: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Signup failed');
+        const errorData = await response.json();
+        if (errorData.message === 'User already exists') {
+          // Handle specific error message
+          setErrorMessage('This email is already registered. Please use a different email.');
+        } else {
+          throw new Error(errorData.message || 'Signup failed');
+        }
+      } else {
+        const data = await response.json();
+        console.log("Signup successful:", data);
+        localStorage.setItem('isAuthenticated', 'true');
+        router.push('/'); // Navigate to the homepage
       }
-
-      const data = await response.json();
-      console.log("Signup successful:", data);
-
-      // Set authentication state (optional)
-      localStorage.setItem('isAuthenticated', 'true'); // Set to 'true' after signup
-
-      // Redirect to homepage after successful signup
-      router.push('/'); // Navigate to the homepage
     } catch (error) {
       console.error("Error signing up:", error);
-      // Optionally provide feedback to the user on the error
+      setErrorMessage("Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,6 +49,7 @@ const Signup: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-400 to-blue-500">
       <div className="p-8 bg-white rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">Signup</h2>
+        {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
         <form onSubmit={handleSignup}>
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="email">Email:</label>
@@ -66,8 +75,8 @@ const Signup: React.FC = () => {
               placeholder="Enter your password"
             />
           </div>
-          <button type="submit" className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition duration-300 w-full">
-            Signup
+          <button type="submit" disabled={loading} className="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 transition duration-300 w-full">
+            {loading ? 'Signing Up...' : 'Signup'}
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600">
@@ -79,4 +88,3 @@ const Signup: React.FC = () => {
 };
 
 export default Signup;
-

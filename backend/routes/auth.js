@@ -1,13 +1,13 @@
-// backend/routes/auth.js
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Make sure to create this User model
+const User = require('../models/User'); // Ensure User model is defined
 const router = express.Router();
 
 // User Signup Route
 router.post('/signup', async (req, res) => {
-  const { email, password } = req.body;
+  console.log("request body" , req.body);
+  const { email, password } = await req.body;
 
   try {
     // Check if user already exists
@@ -32,6 +32,7 @@ router.post('/signup', async (req, res) => {
 
     res.status(201).json({ token, user: { id: newUser._id, email: newUser.email } });
   } catch (error) {
+    console.error("Error during signup:", error); // Log the error for debugging
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -58,9 +59,11 @@ router.post('/login', async (req, res) => {
 
     res.json({ token, user: { id: user._id, email: user.email } });
   } catch (error) {
+    console.error("Error during login:", error); // Log the error for debugging
     res.status(500).json({ message: 'Server error' });
   }
 });
 
 module.exports = router;
+
 

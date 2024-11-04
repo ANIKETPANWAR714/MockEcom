@@ -27,6 +27,7 @@ app.use('/api/auth', authRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {
+  console.log("API root accessed")
   res.send('API is running...');
 });
 
