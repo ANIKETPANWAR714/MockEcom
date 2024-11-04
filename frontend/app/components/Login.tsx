@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link'; // Import Link
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -79,7 +80,7 @@ const Login: React.FC = () => {
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600">
-          Don't have an account? <a href="/signup" className="text-green-500 hover:underline">Signup here</a>
+          Don&apos;t have an account? <Link href="/signup" className="text-green-500 hover:underline">Signup here</Link>
         </p>
       </div>
     </div>
@@ -87,4 +88,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-
