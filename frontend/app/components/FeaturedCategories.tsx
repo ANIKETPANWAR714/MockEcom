@@ -1,7 +1,7 @@
 // app/components/FeaturedCategories.tsx
 "use client";
 import Image from 'next/image';
-import electronics from '../images/electronics.jpeg';
+import electronics from '../images/Electronics.jpeg';
 import fashion from '../images/fashion.jpeg';
 import kitchen from '../images/kitchen.jpeg';
 import books from '../images/books.png';
